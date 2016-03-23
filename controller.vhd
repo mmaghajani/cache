@@ -5,7 +5,12 @@ entity controller is port(
   write_request : in std_logic ;
   read_request: in std_logic ;
   clk : in std_logic;
-  ram_ready: in std_logic
+  ram_ready: in std_logic ;
+  hit: in std_logic ;
+  is_valid: in std_logic ;
+  invalidate: out std_logic ;
+  ram_write: out std_logic ;
+  ram_read: out std_logic 
   ) ;
 end controller;
 
@@ -15,7 +20,7 @@ architecture behavioral of controller is
   constant write: integer := 2 ;
   constant hit: integer := 3 ;
   constant miss: integer := 4 ;
-  constant ram_read: integer := 5 ;
+  constant read_from_ram: integer := 5 ;
 begin
   process(clk)
     variable state: integer range 0 to 5 := start ;
@@ -29,6 +34,21 @@ begin
           else
             state := start ;
         end if;
+        when write =>
+          invalidate <= '1' ;
+          ram_write <= '1' ;
+          state := start ;
+        when read =>
+          if( hit = '1' and is_valid = '1' )then
+            state := start ;
+          else
+            state := miss ;
+            end if;
+        when miss =>
+          ram_read = '1' ;
+          if( ram_ready = '1' ) then
+            state := read_from_ram ;
+          end if ;
         when others =>
           state := start ;
       end case ;
