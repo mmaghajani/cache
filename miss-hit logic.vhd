@@ -11,25 +11,19 @@ entity miss_hit_logic is port (
   );
 end miss_hit_logic;
 
-architecture dataflow of miss_hit_logic is
+architecture gate_level of miss_hit_logic is
+signal equal_w0: std_logic_vector(3 downto 0);
+    signal equal_w1: std_logic_vector(3 downto 0);
+    signal is_valid_w0: std_logic;
+    signal is_valid_w1: std_logic;
 begin
-
-process
-	  begin
-	     if( tag = w0(3 downto 0) and w0(4) = '1' ) then
-	       w1_valid <= '0' ;
-	       w0_valid <= '1' ;
-	       hit <= '1' ;
-	     elsif( tag = w1( 3 downto 0) and w1(4) = '1' ) then
-	       w1_valid <= '1' ;
-	       w0_valid <= '0' ;
-	       hit <= '1' ;
-	     else
-	       w1_valid <= '0' ;
-	       w0_valid <= '0' ;
-	       hit <= '1' ;	     
-	     end if ;  
-	  end process ;
-end dataflow;
+    equal_w0 <= w0(3 downto 0) xnor tag;
+    equal_w1 <= w1(3 downto 0) xnor tag;
+    is_valid_w0 <= equal_w0(3) and equal_w0(2) and equal_w0(1) and equal_w0(0);
+    is_valid_w1 <= equal_w1(3) and equal_w1(2) and equal_w1(1) and equal_w1(0);
+    w0_valid <= is_valid_w0 and w0(4);
+    w1_valid <= is_valid_w1 and w1(4);
+    hit <= (is_valid_w0 and w0(4)) or (is_valid_w1 and w1(4));
+end gate_level;
 
 
