@@ -6,8 +6,7 @@ entity controller is port(
   read_request: in std_logic ;
   clk : in std_logic;
   ram_ready: in std_logic ;
-  hit: in std_logic ;
-  is_valid: in std_logic ;
+  is_hit: in std_logic ;
   invalidate: out std_logic ;
   ram_write: out std_logic ;
   ram_read: out std_logic ;
@@ -26,6 +25,7 @@ begin
   process(clk)
     variable state: integer range 0 to 5 := start ;
     begin
+      if(clk'event AND clk='1') then
       case state is
         when start =>
           invalidate <= '0' ;
@@ -46,19 +46,38 @@ begin
           wren <= '0' ;
           state := start ;
         when read =>
-          if( hit = '1' and is_valid = '1' )then
-            state := start ;
+          invalidate <= '0' ;
+          ram_write <= '0' ;
+          ram_read <= '0' ;
+          wren <= '0' ;
+          if( is_hit = '1' )then
+            state := hit ;
           else
             state := miss ;
             end if;
         when miss =>
-          ram_read = '1' ;
+          ram_read <= '1' ;
+          invalidate <= '0' ;
+          ram_write <= '0' ;
+          wren <= '0' ;
           if( ram_ready = '1' ) then
             state := read_from_ram ;
           end if ;
+        when hit =>
+          invalidate <= '0' ;
+          ram_write <= '0' ;
+          ram_read <= '0' ;
+          wren <= '0' ;
+          state := start ;
+        when read_from_ram =>
+          invalidate <= '0' ;
+          ram_write <= '0' ;
+          ram_read <= '0' ;
+          wren <= '1' ;
+          state := start ;
         when others =>
           state := start ;
       end case ;
-      
+      end if ;
       end process ;
 end behavioral ;
