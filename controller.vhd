@@ -10,8 +10,9 @@ entity controller is port(
   is_valid: in std_logic ;
   invalidate: out std_logic ;
   ram_write: out std_logic ;
-  ram_read: out std_logic 
-  ) ;
+  ram_read: out std_logic ;
+  wren: out std_logic
+  );
 end controller;
 
 architecture behavioral of controller is
@@ -27,6 +28,10 @@ begin
     begin
       case state is
         when start =>
+          invalidate <= '0' ;
+          ram_write <= '0' ;
+          ram_read <= '0' ;
+          wren <= '0' ;
         if(write_request = '1' and read_request = '0')then
          state := write ;
         elsif( write_request = '0' and read_request = '1')then
@@ -37,6 +42,8 @@ begin
         when write =>
           invalidate <= '1' ;
           ram_write <= '1' ;
+          ram_read <= '0' ;
+          wren <= '0' ;
           state := start ;
         when read =>
           if( hit = '1' and is_valid = '1' )then
