@@ -7,8 +7,6 @@ entity lru_array is port (
   address: in std_logic_vector(5 downto 0) ;
   read_w0:in std_logic ;
   read: in std_logic ;
-  write: in std_logic ;
-  write_w0:in std_logic ;
   w1_select: out std_logic
   );
 end lru_array;
@@ -19,15 +17,7 @@ signal counter: counter_type := (others => (0,0));
 begin
 process(clk)
   begin
-    if( clk'event and clk = '1' )then
-      if( write = '1' )then
-        if( write_w0 = '1' )then
-          counter(to_integer(unsigned(address)) , 0 ) <= 0 ;
-        else
-          counter(to_integer(unsigned(address)) , 1 ) <= 0 ;
-        end if ;
-      end if ;
-      
+    if( clk'event and clk = '1' )then      
       if( read = '1' )then
         if( read_w0 = '1' )then
           counter(to_integer(unsigned(address)) , 0 ) <= counter(to_integer(unsigned(address)) , 0 ) + 1 ;
@@ -37,8 +27,10 @@ process(clk)
       else
         if( counter(to_integer(unsigned(address)) , 1 ) > counter(to_integer(unsigned(address)) , 0 ) )then
           w1_select <= '0' ;
+          counter(to_integer(unsigned(address)) , 0 ) <= 0 ;
         else
           w1_select <= '1' ;
+          counter(to_integer(unsigned(address)) , 1 ) <= 0 ;
         end if ;
       end if ;
     end if ;
