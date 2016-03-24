@@ -7,9 +7,12 @@ entity controller is port(
   clk : in std_logic;
   ram_ready: in std_logic ;
   is_hit: in std_logic ;
+  w0_valid: in std_logic ;
   invalidate: out std_logic ;
   ram_write: out std_logic ;
   ram_read: out std_logic ;
+  read_w0: out std_logic ;
+  read_cache: out std_logic ;
   wren: out std_logic
   );
 end controller;
@@ -32,6 +35,8 @@ begin
           ram_write <= '0' ;
           ram_read <= '0' ;
           wren <= '0' ;
+          read_cache <= '0' ;
+          read_w0 <= '0' ;
         if(write_request = '1' and read_request = '0')then
          state := write ;
         elsif( write_request = '0' and read_request = '1')then
@@ -44,12 +49,16 @@ begin
           ram_write <= '1' ;
           ram_read <= '0' ;
           wren <= '0' ;
+          read_cache <= '0' ;
+          read_w0 <= '0' ;
           state := start ;
         when read =>
           invalidate <= '0' ;
           ram_write <= '0' ;
           ram_read <= '0' ;
           wren <= '0' ;
+          read_cache <= '0' ;
+          read_w0 <= '0' ;
           if( is_hit = '1' )then
             state := hit ;
           else
@@ -60,6 +69,8 @@ begin
           invalidate <= '0' ;
           ram_write <= '0' ;
           wren <= '0' ;
+          read_cache <= '0' ;
+          read_w0 <= '0' ;
           if( ram_ready = '1' ) then
             state := read_from_ram ;
           end if ;
@@ -68,12 +79,16 @@ begin
           ram_write <= '0' ;
           ram_read <= '0' ;
           wren <= '0' ;
+          read_cache <= '1' ;
+          read_w0 <= w0_valid ; 
           state := start ;
         when read_from_ram =>
           invalidate <= '0' ;
           ram_write <= '0' ;
           ram_read <= '0' ;
           wren <= '1' ;
+          read_cache <= '0' ;
+          read_w0 <= '0' ;
           state := start ;
         when others =>
           state := start ;
