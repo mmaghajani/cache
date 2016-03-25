@@ -13,9 +13,9 @@ end miss_hit_logic;
 
 architecture gate_level of miss_hit_logic is
 signal equal_w0: std_logic_vector(3 downto 0);
-    signal equal_w1: std_logic_vector(3 downto 0);
-    signal is_valid_w0: std_logic;
-    signal is_valid_w1: std_logic;
+signal equal_w1: std_logic_vector(3 downto 0);
+signal is_valid_w0: std_logic;
+signal is_valid_w1: std_logic;
 begin
     equal_w0 <= w0(3 downto 0) xnor tag;
     equal_w1 <= w1(3 downto 0) xnor tag;
