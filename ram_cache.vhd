@@ -60,29 +60,28 @@ architecture data_flow of ram_cache is
   signal ram_rddata: std_logic_vector(31 downto 0 ) ;
   signal ram_data_ready:std_logic ;
   signal w0_valid:std_logic ;
+  signal invalidate:std_logic ;
+  signal ram_write:std_logic ;
+  signal ram_read:std_logic ;
+  signal read_w0:std_logic ;
+  signal read_cache:std_logic ;
+  signal write_cache:std_logic ;
+  signal is_hit:std_logic ;
     
 begin
   
-  my_cache : cache port map( clk , addr , , wrdata , reset_n , , , , hit , cache_rddata , w0_valid) ;
+  my_cache : cache port map( clk , addr , write_cache , wrdata , reset_n , read_cache , read_w0 ,
+    invalidate , is_hit , cache_rddata , w0_valid) ;
     
-  my_ram : ram port map( clk , addr , , wrdata , ram_data_ready , ram_rddata) ;
+  my_ram : ram port map( clk , addr , write , wrdata , ram_data_ready , ram_rddata) ;
     
-  my_controller : controller port map( write , read , clk , ram_data_ready , hit , w0_valid ,
+  my_controller : controller port map( write , read , clk , ram_data_ready , is_hit , w0_valid ,
+    invalidate , ram_write , ram_read , read_w0 , read_cache , write_cache ) ;
     
-  with hit select rddata <=
+  hit <= is_hit ;
+  with is_hit select rddata <=
     cache_rddata when '1' ,
     ram_rddata when others ;
-    
-  w0_tag_valid : tag_valid_array port map( clk , cpu_address(5 downto 0 ) , w0_wren , reset , invalidate ,
-     cpu_address(9 downto 6 ) , w0_tag_valid_output ) ;
-  w1_tag_valid : tag_valid_array port map( clk , cpu_address(5 downto 0 ) , w1_wren , reset , invalidate ,
-     cpu_address(9 downto 6 ) , w1_tag_valid_output ) ;
-     
-  lru : lru_array port map (clk , cpu_address(5 downto 0 ) , read_w0 , read_cache , w1_select ) ;
-  
-  with read_w0 select rddata <=
-    w0_data_array_rddata when '1' ,
-    w1_data_array_rddata when others ;
 
 end data_flow ;
   
