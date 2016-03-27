@@ -73,7 +73,7 @@ begin
   w1_wren <= wren and (w1_select) ;
   w0_data_array: data_array port map( clk , cpu_address(5 downto 0 ) , w0_wren, wrdata ,
    w0_data_array_rddata ) ;
-  w1_data_array: data_array port map( clk , cpu_address(5 downto 0 ) , w0_wren, wrdata ,
+  w1_data_array: data_array port map( clk , cpu_address(5 downto 0 ) , w1_wren, wrdata ,
    w1_data_array_rddata ) ;
     
   miss_hit : miss_hit_logic port map( cpu_address( 9 downto 6 ) , w0_tag_valid_output ,
