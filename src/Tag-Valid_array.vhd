@@ -19,8 +19,8 @@ architecture dataflow of tag_valid_array is
 type tagArray is array ( 0 to 63 ) of std_logic_vector(3 downto 0) ;
 type valid is array ( 0 to 63 ) of std_logic ;
 
-signal valid_array : valid ;
-signal tag_array:tagArray ;
+signal valid_array : valid := (others => '0');
+signal tag_array:tagArray := (others => "1111" );
 
 begin
 
@@ -29,15 +29,18 @@ begin
 	   if(clk'event AND clk='1') then
 	     if( wren = '1' ) then
 	       tag_array(to_integer(unsigned(address))) <= wrdata ;
+	       valid_array(to_integer(unsigned(address))) <= '1' ;
 	       if( invalidate = '1' )then
-	         valid_array(to_integer(unsigned(address))) <= '1' ;
+	         valid_array(to_integer(unsigned(address))) <= '0' ;
 	         end if ;
-	     else
 	       output <= valid_array(to_integer(unsigned(address))) & 
 	                 tag_array(to_integer(unsigned(address))) ;
+	     else
 	       if( invalidate = '1' )then
-	         valid_array(to_integer(unsigned(address))) <= '1' ;
+	         valid_array(to_integer(unsigned(address))) <= '0' ;
 	         end if ;
+	       output <= valid_array(to_integer(unsigned(address))) & 
+	                 tag_array(to_integer(unsigned(address))) ;
 	     end if ;
 	     
 	     if(reset_n = '1') then
