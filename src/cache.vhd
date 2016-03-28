@@ -13,7 +13,8 @@ read_w0: in std_logic ;
 invalidate:in std_logic ;
 hit:out std_logic ;
 rddata:out std_logic_vector(31 downto 0 ) ; 
-w0_valid: out std_logic
+w0_valid: out std_logic;
+data_ready: out std_logic
 );
 end cache ;
 
@@ -23,7 +24,8 @@ architecture data_flow of cache is
     address: in std_logic_vector(5 downto 0);
     wren: in std_logic;
     wrdata:in std_logic_vector(31 downto 0);
-    data: out std_logic_vector(31 downto 0)
+    data: out std_logic_vector(31 downto 0);
+    data_array_ready: out std_logic
   );
   end component ;
   
@@ -34,7 +36,8 @@ architecture data_flow of cache is
     reset_n: in std_logic;
     invalidate: in std_logic;
     wrdata:in std_logic_vector(3 downto 0);
-    output: out std_logic_vector( 4 downto 0 )
+    output: out std_logic_vector( 4 downto 0 );
+    tag_valid_ready: out std_logic
     );
   end component ;
   
@@ -66,23 +69,26 @@ architecture data_flow of cache is
   signal w1_select: std_logic ;
   signal w0_data_array_rddata : std_logic_vector(31 downto 0 ) ;
   signal w1_data_array_rddata : std_logic_vector(31 downto 0 ) ;
-    
+  signal w0_data_array_ready : std_logic ;
+  signal w1_data_array_ready : std_logic ;
+  signal w0_tag_valid_ready : std_logic ;
+  signal w1_tag_valid_ready : std_logic ;
 begin
   
   w0_wren <= wren and (not w1_select) ;
   w1_wren <= wren and (w1_select) ;
   w0_data_array: data_array port map( clk , cpu_address(5 downto 0 ) , w0_wren, wrdata ,
-   w0_data_array_rddata ) ;
+   w0_data_array_rddata , w0_data_array_ready) ;
   w1_data_array: data_array port map( clk , cpu_address(5 downto 0 ) , w1_wren, wrdata ,
-   w1_data_array_rddata ) ;
+   w1_data_array_rddata , w1_data_array_ready) ;
     
   miss_hit : miss_hit_logic port map( cpu_address( 9 downto 6 ) , w0_tag_valid_output ,
   w1_tag_valid_output , hit , w0_valid , w1_valid_miss_hit_logic ) ;
     
   w0_tag_valid : tag_valid_array port map( clk , cpu_address(5 downto 0 ) , w0_wren , reset , invalidate ,
-     cpu_address(9 downto 6 ) , w0_tag_valid_output ) ;
+     cpu_address(9 downto 6 ) , w0_tag_valid_output , w0_tag_valid_ready) ;
   w1_tag_valid : tag_valid_array port map( clk , cpu_address(5 downto 0 ) , w1_wren , reset , invalidate ,
-     cpu_address(9 downto 6 ) , w1_tag_valid_output ) ;
+     cpu_address(9 downto 6 ) , w1_tag_valid_output , w1_tag_valid_ready) ;
      
   lru : lru_array port map (clk , cpu_address(5 downto 0 ) , read_w0 , read_cache , w1_select ) ;
   
@@ -90,6 +96,8 @@ begin
     w0_data_array_rddata when '1' ,
     w1_data_array_rddata when others ;
 
+  data_ready <= w0_tag_valid_ready and w1_tag_valid_ready and 
+    w1_data_array_ready and w0_data_array_ready ;
 end data_flow ;
   
     

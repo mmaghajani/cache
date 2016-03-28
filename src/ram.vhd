@@ -26,8 +26,8 @@ process(clk)
         data_array(to_integer(unsigned(address))) <= data_in ;
       else
         data_out <= data_array(to_integer(unsigned(address))) ;
-        data_ready <= '1' ;
       end if ;
+      data_ready <= '1' ;
     end if ;
   end process ;
 end dataflow;

@@ -9,7 +9,8 @@ entity tag_valid_array is port (
   reset_n: in std_logic;
   invalidate: in std_logic;
   wrdata:in std_logic_vector(3 downto 0);
-  output: out std_logic_vector( 4 downto 0 )
+  output: out std_logic_vector( 4 downto 0 );
+  tag_valid_ready: out std_logic
   );
 end tag_valid_array;
 
@@ -27,6 +28,7 @@ begin
 	process( clk )
 	  begin
 	   if(clk'event AND clk='1') then
+	     tag_valid_ready <= '0' ;
 	     if( wren = '1' ) then
 	       tag_array(to_integer(unsigned(address))) <= wrdata ;
 	       valid_array(to_integer(unsigned(address))) <= '1' ;
@@ -49,6 +51,7 @@ begin
 	         valid_array(i) <= '0' ;
 	       end loop ;
        end if;
+       tag_valid_ready <= '1' ;
 	   end if ;  
 	  end process ;
 	  

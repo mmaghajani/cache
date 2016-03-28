@@ -7,7 +7,8 @@ entity data_array is port (
   address: in std_logic_vector(5 downto 0);
   wren: in std_logic;
   wrdata:in std_logic_vector(31 downto 0);
-  data: out std_logic_vector(31 downto 0)
+  data: out std_logic_vector(31 downto 0);
+  data_array_ready: out std_logic
   );
 end data_array;
 
@@ -22,12 +23,14 @@ begin
 	process( clk )
 	  begin
 	   if(clk'event AND clk='1') then
+	     data_array_ready <= '0' ;
 	     if( wren = '1' ) then
 	       w_array(to_integer(unsigned(address))) <= wrdata ;
 	       data <= w_array(to_integer(unsigned(address))) ;
 	     else
 	       data <= w_array(to_integer(unsigned(address))) ;
 	     end if ;
+	     data_array_ready <= '1' ;
 	   end if ;  
 	  end process ;
 	

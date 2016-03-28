@@ -26,7 +26,8 @@ architecture data_flow of ram_cache is
     invalidate:in std_logic ;
     hit:out std_logic ;
     rddata:out std_logic_vector(31 downto 0 );
-    w0_valid:out std_logic
+    w0_valid: out std_logic;
+    data_ready: out std_logic
   );
   end component ;
   
@@ -45,6 +46,7 @@ architecture data_flow of ram_cache is
     read_request: in std_logic ;
     clk : in std_logic;
     ram_ready: in std_logic ;
+    cache_ready: in std_logic ;
     is_hit: in std_logic ;
     w0_valid: in std_logic ;
     invalidate: out std_logic ;
@@ -59,6 +61,7 @@ architecture data_flow of ram_cache is
   signal cache_rddata: std_logic_vector( 31 downto 0 ) ;
   signal ram_rddata: std_logic_vector(31 downto 0 ) ;
   signal ram_data_ready:std_logic ;
+  signal cache_data_ready: std_logic ;
   signal w0_valid:std_logic ;
   signal invalidate:std_logic ;
   signal ram_write:std_logic ;
@@ -71,12 +74,12 @@ architecture data_flow of ram_cache is
 begin
   
   my_cache : cache port map( clk , addr , write_cache , wrdata , reset_n , read_cache , read_w0 ,
-    invalidate , is_hit , cache_rddata , w0_valid) ;
+    invalidate , is_hit , cache_rddata , w0_valid , cache_data_ready) ;
     
   my_ram : ram port map( clk , addr , write , wrdata , ram_data_ready , ram_rddata) ;
     
-  my_controller : controller port map( write , read , clk , ram_data_ready , is_hit , w0_valid ,
-    invalidate , ram_write , ram_read , read_w0 , read_cache , write_cache ) ;
+  my_controller : controller port map( write , read , clk , ram_data_ready , cache_data_ready ,
+  is_hit , w0_valid , invalidate , ram_write , ram_read , read_w0 , read_cache , write_cache ) ;
     
   hit <= is_hit ;
   with is_hit select rddata <=
