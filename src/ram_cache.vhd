@@ -73,7 +73,7 @@ architecture data_flow of ram_cache is
     
 begin
   
-  my_cache : cache port map( clk , addr , write_cache , wrdata , reset_n , read_cache , read_w0 ,
+  my_cache : cache port map( clk , addr , write_cache , ram_rddata , reset_n , read_cache , read_w0 ,
     invalidate , is_hit , cache_rddata , w0_valid , cache_data_ready) ;
     
   my_ram : ram port map( clk , addr , write , wrdata , ram_data_ready , ram_rddata) ;
