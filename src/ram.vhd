@@ -24,6 +24,7 @@ process(clk)
       data_ready <= '0' ;
       if( rw = '1' )then
         data_array(to_integer(unsigned(address))) <= data_in ;
+        data_out <= data_array(to_integer(unsigned(address))) ;
       else
         data_out <= data_array(to_integer(unsigned(address))) ;
       end if ;
