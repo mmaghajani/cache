@@ -25,9 +25,10 @@ architecture behavioral of controller is
   constant hit: integer := 3 ;
   constant miss: integer := 4 ;
   constant read_from_ram: integer := 5 ;
+  constant invalid_cache: integer := 6 ;
 begin
   process(clk)
-    variable state: integer range 0 to 5 := start ;
+    variable state: integer range 0 to 6 := start ;
     begin
       if(clk'event AND clk='1') then
       case state is
@@ -46,14 +47,18 @@ begin
           state := start ;
         end if;
         when write =>
-          invalidate <= '1' ;
+          invalidate <= '0' ;
           ram_write <= '1' ;
           ram_read <= '0' ;
           wren <= '0' ;
           read_cache <= '0' ;
           read_w0 <= '0' ;
-          if(ram_ready = '1' and cache_ready = '1' )then
+          if( is_hit = '1' )then
+            state := invalid_cache ;
+          elsif(ram_ready = '1' and cache_ready = '1' )then
             state := start ;
+          else
+            state := write ;
           end if ;
         when read =>
           invalidate <= '0' ;
@@ -92,6 +97,16 @@ begin
           ram_write <= '0' ;
           ram_read <= '0' ;
           wren <= '1' ;
+          read_cache <= '0' ;
+          read_w0 <= '0' ;
+          if( cache_ready = '1' )then
+            state := start ;
+          end if ;
+        when invalid_cache =>
+          invalidate <= '1' ;
+          ram_write <= '0' ;
+          ram_read <= '0' ;
+          wren <= '0' ;
           read_cache <= '0' ;
           read_w0 <= '0' ;
           if( cache_ready = '1' )then
