@@ -9,11 +9,9 @@ wren : in std_logic ;
 wrdata: in std_logic_vector(31 downto 0 ) ;
 reset:in std_logic ;
 read_cache: in std_logic ;
-read_w0: in std_logic ;
 invalidate:in std_logic ;
 hit:out std_logic ;
 rddata:out std_logic_vector(31 downto 0 ) ; 
-w0_valid: out std_logic;
 data_ready: out std_logic
 );
 end cache ;
@@ -73,6 +71,7 @@ architecture data_flow of cache is
   signal w1_data_array_ready : std_logic ;
   signal w0_tag_valid_ready : std_logic ;
   signal w1_tag_valid_ready : std_logic ;
+  signal read_w0 : std_logic ;
 begin
   
   w0_wren <= wren and (not w1_select) ;
@@ -83,8 +82,8 @@ begin
    w1_data_array_rddata , w1_data_array_ready) ;
     
   miss_hit : miss_hit_logic port map( cpu_address( 9 downto 6 ) , w0_tag_valid_output ,
-  w1_tag_valid_output , hit , w0_valid , w1_valid_miss_hit_logic ) ;
-    
+  w1_tag_valid_output , hit , read_w0 , w1_valid_miss_hit_logic ) ;
+  
   w0_tag_valid : tag_valid_array port map( clk , cpu_address(5 downto 0 ) , w0_wren , reset , invalidate ,
      cpu_address(9 downto 6 ) , w0_tag_valid_output , w0_tag_valid_ready) ;
   w1_tag_valid : tag_valid_array port map( clk , cpu_address(5 downto 0 ) , w1_wren , reset , invalidate ,
