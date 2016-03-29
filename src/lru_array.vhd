@@ -7,6 +7,7 @@ entity lru_array is port (
   address: in std_logic_vector(5 downto 0) ;
   read_w0:in std_logic ;
   read: in std_logic ;
+  write: in std_logic ;
   w1_select: out std_logic
   );
 end lru_array;
@@ -24,7 +25,7 @@ process(clk)
         else
           counter(to_integer(unsigned(address)) , 1 ) <= counter(to_integer(unsigned(address)) , 1 ) + 1 ;
         end if ;
-      else
+      elsif( write = '1' )then
         if( counter(to_integer(unsigned(address)) , 1 ) > counter(to_integer(unsigned(address)) , 0 ) )then
           w1_select <= '0' ;
           counter(to_integer(unsigned(address)) , 0 ) <= 0 ;

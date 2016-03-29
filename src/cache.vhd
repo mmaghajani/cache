@@ -54,6 +54,7 @@ architecture data_flow of cache is
     address: in std_logic_vector(5 downto 0) ;
     read_w0:in std_logic ;
     read: in std_logic ;
+    write: in std_logic ;
     w1_select: out std_logic
   );
   end component ;
@@ -89,7 +90,7 @@ begin
   w1_tag_valid : tag_valid_array port map( clk , cpu_address(5 downto 0 ) , w1_wren , reset , invalidate ,
      cpu_address(9 downto 6 ) , w1_tag_valid_output , w1_tag_valid_ready) ;
      
-  lru : lru_array port map (clk , cpu_address(5 downto 0 ) , read_w0 , read_cache , w1_select ) ;
+  lru : lru_array port map (clk , cpu_address(5 downto 0 ) , read_w0 , read_cache , wren , w1_select ) ;
   
   with read_w0 select rddata <=
     w0_data_array_rddata when '1' ,
