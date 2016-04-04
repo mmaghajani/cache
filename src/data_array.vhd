@@ -19,18 +19,15 @@ type arrayData is array ( 0 to 63 ) of std_logic_vector(31 downto 0) ;
 signal w_array:arrayData := (others => "00000000000000000000000000000000" ) ;
 
 begin
-
+  data <= w_array(to_integer(unsigned(address))) ;
 	process( clk )
 	  begin
 	   if(clk'event AND clk='1') then
-	     data_array_ready <= '0' ;
+	     data_array_ready <= '1' ;
 	     if( wren = '1' ) then
 	       w_array(to_integer(unsigned(address))) <= wrdata ;
-	       data <= w_array(to_integer(unsigned(address))) ;
-	     else
-	       data <= w_array(to_integer(unsigned(address))) ;
+	       data_array_ready <= '1' ;
 	     end if ;
-	     data_array_ready <= '1' ;
 	   end if ;  
 	  end process ;
 	

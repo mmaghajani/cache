@@ -25,24 +25,28 @@ signal tag_array:tagArray := (others => "1111" );
 
 begin
 
+  output <= valid_array(to_integer(unsigned(address))) & 
+	                 tag_array(to_integer(unsigned(address))) ;
+	                 
 	process( clk )
 	  begin
 	   if(clk'event AND clk='1') then
-	     tag_valid_ready <= '0' ;
+	     tag_valid_ready <= '1' ;
 	     if( wren = '1' ) then
 	       tag_array(to_integer(unsigned(address))) <= wrdata ;
 	       valid_array(to_integer(unsigned(address))) <= '1' ;
 	       if( invalidate = '1' )then
 	         valid_array(to_integer(unsigned(address))) <= '0' ;
 	         end if ;
-	       output <= valid_array(to_integer(unsigned(address))) & 
-	                 tag_array(to_integer(unsigned(address))) ;
+	       
+	       tag_valid_ready <= '1' ;
 	     else
 	       if( invalidate = '1' )then
 	         valid_array(to_integer(unsigned(address))) <= '0' ;
-	         end if ;
-	       output <= valid_array(to_integer(unsigned(address))) & 
-	                 tag_array(to_integer(unsigned(address))) ;
+	         tag_valid_ready <= '1' ;
+	       else
+	         tag_valid_ready <= '1' ;
+	       end if ;
 	     end if ;
 	     
 	     if(reset_n = '1') then
@@ -51,7 +55,6 @@ begin
 	         valid_array(i) <= '0' ;
 	       end loop ;
        end if;
-       tag_valid_ready <= '1' ;
 	   end if ;  
 	  end process ;
 	  

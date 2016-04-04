@@ -15,20 +15,20 @@ end ram;
 architecture dataflow of ram is
 type data_array_type is array ( 0 to 1023 ) of std_logic_vector(31 downto 0) ;
  
-signal data_array:data_array_type := ( others => "00000000000000000000000000000000" );
+signal data_array:data_array_type := ( others => "11111111111111111111111111111111" );
 
 begin
+  data_out <= data_array(to_integer(unsigned(address))) ;
 process(clk)
   begin
     if( clk'event and clk = '1' )then
       data_ready <= '0' ;
       if( rw = '1' )then
         data_array(to_integer(unsigned(address))) <= data_in ;
-        data_out <= data_array(to_integer(unsigned(address))) ;
+        data_ready <= '1' ;
       else
-        data_out <= data_array(to_integer(unsigned(address))) ;
+        data_ready <= '1' ;
       end if ;
-      data_ready <= '1' ;
     end if ;
   end process ;
 end dataflow;
