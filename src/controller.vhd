@@ -19,38 +19,31 @@ end controller;
 architecture behavioral of controller is
   constant start: integer := 0 ;
   constant read_from_ram: integer := 1 ;
+  constant write_to_ram: integer := 2 ;
 begin
   process(clk)
-    variable state: integer range 0 to 1 := start ;
+    variable state: integer range 0 to 2 := start ;
     begin
       if(clk'event AND clk='1') then
       case state is
         when start =>
         if(write_request = '1' and read_request = '0')then
-          if( is_hit = '1')then
-            invalidate <= '1' ;
-          else
-            invalidate <= '0' ;
-          end if ;
-          ram_write <= '1' ;
-          ram_read <= '0' ;
-          wren <= '0' ;
-          read_cache <= '0' ;
+          state := write_to_ram ;
         elsif( write_request = '0' and read_request = '1')then
-        if( is_hit = '1' )then
+          if( is_hit = '1' )then
             invalidate <= '0' ;
             ram_write <= '0' ;
             ram_read <= '0' ;
             wren <= '0' ;
             read_cache <= '1' ;
-        else
+          else
             ram_read <= '1' ;
             invalidate <= '0' ;
             ram_write <= '0' ;
             wren <= '0' ;
             read_cache <= '0' ;
             state := read_from_ram ;
-        end if;
+          end if;
         else
             invalidate <= '0' ;
             ram_write <= '0' ;
@@ -67,6 +60,17 @@ begin
             if( cache_ready = '1' )then
               state := start ;
             end if ;
+        when write_to_ram =>
+          if( is_hit = '1')then
+            invalidate <= '1' ;
+          else
+            invalidate <= '0' ;
+          end if ;
+          ram_write <= '1' ;
+          ram_read <= '0' ;
+          wren <= '0' ;
+          read_cache <= '0' ;
+          state := start ;
         when others =>
           state := start ;
       end case ;

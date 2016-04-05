@@ -35,7 +35,7 @@ begin
     wrdata <= STD_LOGIC_VECTOR(to_unsigned(56,32)),
               STD_LOGIC_VECTOR(to_unsigned(98,32)) after 500 ns;
     write <= '0', '1' after 210 ns , '0' after 260 ns;
-    read <= '1', '0' after 85 ns;
+    read <= '1', '0' after 70 ns;
     reset_n <= '0';
 
     CLOCK:

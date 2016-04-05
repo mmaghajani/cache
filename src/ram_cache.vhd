@@ -70,7 +70,7 @@ begin
   my_cache : cache port map( clk , addr , write_cache , ram_rddata , reset_n , read_cache ,
     invalidate , is_hit , cache_rddata , cache_data_ready) ;
     
-  my_ram : ram port map( clk , addr , write , wrdata , ram_data_ready , ram_rddata) ;
+  my_ram : ram port map( clk , addr , ram_write , wrdata , ram_data_ready , ram_rddata) ;
     
   my_controller : controller port map( write , read , clk , ram_data_ready , cache_data_ready ,
   is_hit , invalidate , ram_write , ram_read , read_cache , write_cache ) ;
