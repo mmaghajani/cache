@@ -37,7 +37,7 @@ begin
             std_logic_vector(to_unsigned(0,10)) after 1820 ns,
             std_logic_vector(to_unsigned(64,10)) after 2120 ns,
             std_logic_vector(to_unsigned(65,10)) after 2420 ns,
-            std_logic_vector(to_unsigned(52,10)) after 2720 ns;
+            std_logic_vector(to_unsigned(0,10)) after 2720 ns;
             
             
 
